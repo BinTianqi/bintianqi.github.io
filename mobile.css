@@ -1,0 +1,11 @@
+@media only screen and (max-width: 800px) {
+    .mainright{
+        visibility: hidden;
+        display:none;
+    }
+    .mainleft{
+        width: 100%;
+        margin-right: 0%;
+    }
+}
+  
