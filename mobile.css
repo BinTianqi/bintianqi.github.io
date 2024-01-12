@@ -1,4 +1,10 @@
 @media only screen and (max-width: 800px) {
+    .navdiv{
+        width: 98%;
+    }
+    .maindiv{
+        width: 98%;
+    }
     .mainright{
         visibility: hidden;
         display:none;
@@ -6,6 +12,7 @@
     .mainleft{
         width: 100%;
         margin-right: 0%;
+        display: flex;
     }
 }
   
