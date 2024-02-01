@@ -8,10 +8,8 @@
 	padding: 0% 4% 0% 4%;
 	text-decoration: none;
 	line-height: 2.5rem;
-	max-height: 90%;
 	height: 2.5rem;
 	display: flex;
-	text-align: center;
 	cursor: pointer;
 }
 
@@ -24,7 +22,6 @@
 	background-color: #f1deff;
     border-radius:.8rem;
 	height: 3.5em;
-	min-width:30rem;
     width:90%;
 	text-align: center;
 	align-items: center;
@@ -54,9 +51,8 @@ body{
 	margin-top: .3%;
 	margin-left: auto;
 	margin-right: auto;
-	height: 90%;
+	height: 91%;
 	width: 90%;
-	min-width: 30rem;
 	display: flex;
 	overflow: hidden;
 }

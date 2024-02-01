@@ -1,9 +1,17 @@
 @media only screen and (max-width: 800px) {
+    .tab{
+        height: 2.3rem;
+        line-height: 2.3rem;
+        margin:0% 1% 0% 1%;
+	    padding: 0% 3% 0% 3%;
+    }
     .navdiv{
         width: 98%;
+        height: 3rem;
     }
     .maindiv{
         width: 98%;
+        height: 95%;
     }
     .mainright{
         visibility: hidden;

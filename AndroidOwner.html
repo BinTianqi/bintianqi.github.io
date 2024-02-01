@@ -1,88 +1,25 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Android Owner</title>
-    <style>
-        div{
-            margin: 1%;
-            height: auto;
-            display: flexbox;
-            padding-bottom: 3%;
-        }
-        a,ul{ 
-            line-height: 1.5rem;
-        }
-        h3{
-            line-height: 1rem;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+<title>Android Owner</title>
+<link rel="stylesheet" href="desktop.css"/>
+<link rel="stylesheet" href="mobile.css"/>
 </head>
 	
 <body>
-    <div>
-        <h1>Android Owner</h1>
-        <h3>简介</h3>
-        <a>使用安卓的Device Admin和Device Owner，全方位掌控你的设备。</a>
-        <br/>
-        <a>这个应用使用Kotlin + Jetpack Compose，有不完全的质感设计3配色</a>
-        <h3>项目主页：</h3>
-        <a href=”https://github.com/BinTianqi/AndroidOwner” target="_blank">https://github.com/BinTianqi/AndroidOwner</a>
-        </br>
-        <a>记得给我个小星星，欢迎大家提交Issue</a>
-        <h3>功能</h3>
-        <ul>
-            <li>
-                <a>设备控制</a>
-                <ul>
-                    <li>禁用相机</li>
-                    <li>禁止截屏</li>
-                    <li>全局静音</li>
-                    <li>关闭USB信号（需设备支持）</li>
-                    <li>管理系统更新策略</li>
-                    <li>清除数据</li>
-                </ul>
-            </li>
-            <li>
-                <a>管理应用</a>
-                <ul>
-                    <li>隐藏应用</li>
-                    <li>停用应用</li>
-                    <li>禁止卸载应用</li>
-                </ul>
-            </li>
-            <li>
-                <a>用户限制</a>
-                <ul>
-                    <li>网络和互联网：禁止使用流量、WiFi、VPN、私人DNS</li>
-                    <li>其他连接：禁止使用蓝牙、位置信息、NFC、USB(MTP)</li>
-                    <li>应用：禁止安装卸载应用、禁止清除应用的存储空间</li>
-                    <li>显示与音量：禁止调整亮度、音量</li>
-                    <li>用户和工作资料：禁止添加/切换/移除用户，禁止添加/移除工作资料</li>
-                    <li>杂项：禁止自动填充服务、禁止调试</li>
-                </ul>
-            </li>
-            <li>
-                <a>密码</a>
-                <ul>
-                    <li>修改密码</li>
-                    <li>最大密码错误次数</li>
-                    <li>密码失效超时时间</li>
-                </ul>
-            </li>
-        </ul>
-        <h3>这个应用十分危险！！！</h3>
-        <a>在使用各个功能之前，请仔细阅读相应的说明。红色的按钮一定要谨慎使用！</a>
-        </br>
-        <a>如果操作不慎，可能会意外地丢失数据或者让你无法解锁你的设备！</a>
-        <h3>即将加入的功能</h3>
-        <ul>
-            <li>Profile Owner相关</li>
-            <li>Managed Profile，工作资料相关</li>
-            <li>安装/卸载应用，清除应用的缓存和存储空间</li>
-            <li>应用管理的包选择器（目前只能手动输入包名）</li>
-            <li>适配手表</li>
-        </ul>
-    </div>
+	<div class="navdiv">
+		<a class="tab" href="https://bintianqi.github.io">GitHub Page</a>
+		<a class="tab" href="https://github.com/BinTianqi" target="_blank">GitHub主页</a>
+		<a class="tab" href="AndroidOwner.html">Android Owner</a>
+	</div>
+	<div class="maindiv">
+		<iframe id="mainIframe" src="AndroidOwner-iframe.html" class="mainleft"></iframe>
+		<div class="mainright">
+			<h2>你好</h2>
+			<a>先在这里占个位</a>
+		</div>
+	</div>
 </body>
 </html>
