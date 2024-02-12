@@ -1,0 +1,672 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>Guide</title>
+<style>
+    div{
+        margin: 1%;
+        height: auto;
+        display: flexbox;
+        padding-bottom: 3%;
+    }
+    a,ul{ 
+        line-height: 1.5rem;
+    }
+    h3{
+        line-height: 1rem;
+    }
+</style>
+</head>
+<body><h1 id='使用指南'>使用指南</h1>
+<p>欢迎来到Android owner使用教程</p>
+<p>在这里了解各个功能所需的权限、兼容的安卓版本和注意事项</p>
+<h2 id='目录'>目录</h2>
+<ol start='' >
+<li><a href='#权限'>权限</a></li>
+<li><a href='#系统'>系统</a></li>
+<li><a href='#网络'>网络</a></li>
+<li><a href='#工作资料'>工作资料</a></li>
+<li><a href='#应用管理'>应用管理</a></li>
+<li><a href='#用户限制'>用户限制</a></li>
+<li><a href='#用户管理'>用户管理</a></li>
+<li><a href='#密码与锁屏'>密码与锁屏</a></li>
+
+</ol>
+<h2 id='权限'>权限</h2>
+<h3 id='device-admin'>Device admin</h3>
+<p>权限最小</p>
+<h4 id='激活-1'>激活</h4>
+<ul>
+<li>安卓设置中激活（你可以在此应用中跳转到安卓设置的激活界面）</li>
+<li>ADB命令</li>
+
+</ul>
+<p>ADB激活命令：</p>
+<pre><code class='language-shell' lang='shell'>adb shell dpm set-active-admin com.binbin.androidowner/com.binbin.androidowner.MyDeviceAdminReceiver
+</code></pre>
+<p>一个设备可以同时存在多个Device admin。</p>
+<h4 id='停用-1'>停用</h4>
+<ul>
+<li>此应用的”权限“界面中停用</li>
+<li>安卓设置中停用</li>
+<li><del>ADB命令停用</del>（参考Device owner的ADB命令停用）</li>
+
+</ul>
+<h3 id='profile-owner'>Profile owner</h3>
+<p>权限中等</p>
+<p>如无特别说明，Profile owner包括主用户、工作资料和受管理用户中的Profile owner</p>
+<h4 id='激活-2'>激活</h4>
+<ul>
+<li>使用ADB激活（不推荐，如果能使用ADB，建议激活Device owner），只能有一个Profile owner</li>
+<li>创建工作资料，此应用会成为工作资料中的Profile owner，只能有一个Profile owner</li>
+<li>成为Device owner后创建并管理用户，此应用会成为新用户的Profile owner，每个用户各有一个Profile owner</li>
+
+</ul>
+<p>ADB激活命令：</p>
+<pre><code class='language-shell' lang='shell'>adb shell dpm set-profile-owner com.binbin.androidowner/com.binbin.androidowner.MyDeviceAdminReceiver
+</code></pre>
+<h4 id='停用-2'>停用</h4>
+<p>主用户：”权限“界面中停用</p>
+<p>工作资料：”设备控制“界面中的”清除数据“，会删除工作资料</p>
+<p>受管理的用户：删除用户即可</p>
+<h3 id='device-owner'>Device owner</h3>
+<p>权限最高</p>
+<h4 id='激活-3'>激活</h4>
+<ul>
+<li>使用ADB激活</li>
+<li>恢复出厂设置并开机后，使用NFC发送这个app的下载链接（没试过）</li>
+<li>使用Root权限往/data/system里面放一个xml文件（没试过）</li>
+
+</ul>
+<p>ADB激活命令：</p>
+<pre><code class='language-shell' lang='shell'>adb shell dpm set-device-owner com.binbin.androidowner/com.binbin.androidowner.MyDeviceAdminReceiver
+</code></pre>
+<p>ADB激活有一定局限性</p>
+<p>激活前必须删除所有用户（user），否则会报错。你可以使用下面这条ADB命令查看已有的用户</p>
+<pre><code class='language-shell' lang='shell'>adb shell pm list users
+</code></pre>
+<p>激活前也要删除所有账号（account），否则会报错。你可以使用下面这条ADB命令查看已有的账号</p>
+<pre><code class='language-shell' lang='shell'>adb shell dumpsys account
+</code></pre>
+<p>上面两个是安卓系统的限制，此外，还有设备生产商的限制</p>
+<p>MIUI：需要在开发者选项中打开”USB调试（安全设置）“</p>
+<p>ColorOS：完全不支持Device owner</p>
+<h4 id='停用-3'>停用</h4>
+<ul>
+<li>恢复出厂设置（这是官方推荐的做法）</li>
+<li>在“权限”页面停用（推荐）</li>
+<li>ADB命令停用（麻烦）</li>
+
+</ul>
+<p>ADB命令停用十分麻烦，你需要修改AndroidManifest.xml并自己编译项目。</p>
+<p>你需要把AndroidManifest.xml中第39行的<code>android:testOnly=&quot;false&quot;</code>的值改为true</p>
+<p>由于签名校验，如果你已经安装了release，那这个方法没用</p>
+<p>然后，使用这条ADB命令停用</p>
+<pre><code class='language-shell' lang='shell'>adb shell dpm remove-active-admin com.binbin.androidowner/com.binbin.androidowner.MyDeviceAdminReceiver
+</code></pre>
+<p>使用这条命令也可以停用Device admin和Profile owner</p>
+<p>以上三种方法停用Device owner都会同时停用Device admin</p>
+<h3 id='设备唯一标识码'>设备唯一标识码</h3>
+<p>需API31或以上</p>
+<p>需要先设置<a href='#组织id'>组织ID</a>，同一个组织ID的设备唯一标识码相同，恢复出厂设置不变</p>
+<h3 id='组织名称'>组织名称</h3>
+<p>需API26或以上</p>
+<p>需要Device owner或Profile owner</p>
+<p>设置组织名称后会在一些地方显示此设备归xxx所有</p>
+<h3 id='不受控制的账号类型'>不受控制的账号类型</h3>
+<p>需Device owner或Profile owner</p>
+<p>作用未知</p>
+<h3 id='锁屏信息'>锁屏信息</h3>
+<p>需API24或以上</p>
+<p>需要Device owner或Profile owner</p>
+<p>在锁屏界面上显示的一段简短的消息</p>
+<h3 id='提供支持的长短消息'>提供支持的长/短消息</h3>
+<p>需API24或以上</p>
+<p>如果用户试图使用被挂起的应用或被禁用的功能，会显示提供支持的短消息</p>
+<p>提供支持的长消息不知道有啥用</p>
+<h2 id='系统'>系统</h2>
+<h3 id='禁用相机'>禁用相机</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<h3 id='禁止截屏'>禁止截屏</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>也会禁止AOSP自带的录屏</p>
+<h3 id='隐藏状态栏'>隐藏状态栏</h3>
+<p>需要的权限：Device owner或附属用户的Profile owner</p>
+<p>需要API34或以上</p>
+<p>状态栏仍会显示时间和系统图标，但是通知图标会隐藏，并且状态栏不能下拉</p>
+<h3 id='自动设置时间'>自动设置时间</h3>
+<p>需要的权限：Device owner或由组织拥有的工作资料的Profile owner</p>
+<p>需要API30或以上</p>
+<h3 id='自动设置时区'>自动设置时区</h3>
+<p>需要的权限：Device owner或由组织拥有的工作资料的Profile owner</p>
+<p>需要API30或以上</p>
+<h3 id='自动设置时间弃用）'>自动设置时间（弃用）</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>自从API30开始弃用，在API30或以上的设备上，此功能不会显示</p>
+<h3 id='全局静音'>全局静音</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<h3 id='备份服务'>备份服务</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API26或以上</p>
+<h3 id='禁止蓝牙分享联系人'>禁止蓝牙分享联系人</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API23或以上</p>
+<h3 id='通用标准模式'>通用标准模式</h3>
+<p>需要的权限：Device owner</p>
+<p>需要API30或以上</p>
+<h3 id='usb信号'>USB信号</h3>
+<p>需要的权限：Device owner或由组织拥有的工作资料的Profile owner</p>
+<p>需要API31或以上</p>
+<p>有的设备不支持</p>
+<h3 id='锁屏方式'>锁屏方式</h3>
+<p>禁用和启用锁屏方式，需要无锁屏密码</p>
+<p>需要的权限：Device owner或附属用户的Profile owner</p>
+<p>需要API28或以上</p>
+<h3 id='立即锁屏'>立即锁屏</h3>
+<p>选项：重新输入密码（需API26或以上）</p>
+<p>需要的权限：Device admin</p>
+<p>无论勾不勾选这个选项，解锁时都需要重新输入密码</p>
+<h3 id='请求错误报告'>请求错误报告</h3>
+<p>需要API24或以上</p>
+<p>需要的权限：Device owner</p>
+<h3 id='重启'>重启</h3>
+<p>需要API24或以上</p>
+<p>需要的权限：Device owner</p>
+<h3 id='修改时间'>修改时间</h3>
+<p>输入从Epoch(1970/1/1 00:00:00 UTC)到你想设置的时间(毫秒)</p>
+<p>需要的权限：Device owner或由组织拥有的工作资料的Profile owner</p>
+<h3 id='权限策略'>权限策略</h3>
+<p>当应用请求权限时执行的操作</p>
+<ul>
+<li>默认（由用户决定）</li>
+<li>自动允许</li>
+<li>自动拒绝</li>
+
+</ul>
+<p>需要的权限：Device owner或Profile owner</p>
+<h3 id='mte策略'>MTE策略</h3>
+<p>MTE: Memory Tagging Extension（内存标记拓展）<a href='https://developer.android.google.cn/ndk/guides/arm-mte?hl=zh-cn'>安卓开发者：MTE</a></p>
+<p>需要安卓14和Armv9</p>
+<p>需要的权限：Device owner</p>
+<p>选项：</p>
+<ul>
+<li>由用户决定</li>
+<li>开启</li>
+<li>关闭</li>
+
+</ul>
+<h3 id='附近app共享附近通知共享'>附近App共享&amp;附近通知共享</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API31或以上</p>
+<p>选项：</p>
+<ul>
+<li>由用户决定</li>
+<li>启用</li>
+<li>禁用</li>
+<li>在足够安全时启用</li>
+
+</ul>
+<h3 id='锁定任务模式'>锁定任务模式</h3>
+<p>需要的权限：Device owner</p>
+<p>需要API28或以上</p>
+<p>选项：</p>
+<ul>
+<li><p>禁用全部</p>
+</li>
+<li><p>自定义</p>
+<ul>
+<li>允许状态栏信息</li>
+<li>允许通知</li>
+<li>允许返回主屏幕（启动器需在白名单内）</li>
+<li>允许打开后台应用概览</li>
+<li>允许全局行为（比如长按电源键的对话框）</li>
+<li>允许锁屏（如果不允许，即使有密码也不会锁屏）</li>
+<li>阻止启动未允许的应用（阻止白名单应用启动非白名单应用，需要API30）</li>
+
+</ul>
+</li>
+
+</ul>
+<h3 id='ca证书'>Ca证书</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要先选择一个证书（一般是*.0）</p>
+<ul>
+<li>查看这个证书是否已安装</li>
+<li>安装这个证书</li>
+<li>卸载这个证书（如果已安装）</li>
+
+</ul>
+<p>或者清除所有用户证书</p>
+<h3 id='安全日志'>安全日志</h3>
+<p>需要的权限：Device owner</p>
+<p>需要API24或以上</p>
+<h3 id='系统更新策略'>系统更新策略</h3>
+<p>需要的权限：Device owner</p>
+<p>查看待安装的更新是否安全补丁</p>
+<p>系统更新策略：</p>
+<ul>
+<li>准备好后立即更新</li>
+<li>在某段时间里更新</li>
+<li>延迟30天</li>
+<li>默认（由用户决定）</li>
+
+</ul>
+<h3 id='恢复出厂设置'>恢复出厂设置</h3>
+<p><strong>谨慎使用</strong></p>
+<p>需要的权限：Device admin</p>
+<p>选项：</p>
+<ul>
+<li>默认</li>
+<li>清除外部存储</li>
+<li>清除受保护的数据（仅Device owner）</li>
+<li>清除eUICC</li>
+<li>静默清除（不会向用户显示原因）</li>
+
+</ul>
+<p>方法：</p>
+<ul>
+<li>WipeData</li>
+<li>WipeDevice（需要API34或以上，需要Device owner或由组织拥有的工作资料的Profile owner）</li>
+
+</ul>
+<p>恢复出厂原因：需要API28或以上，只有WipeData能用</p>
+<p>如果在受管理用户中使用，会清除那个用户的数据并跳转到主用户</p>
+<p>如果在工作资料中使用，会删除工作资料</p>
+<p>API34或以上将不能在系统用户中使用WipeData，如果要恢复出厂设置，请使用WipeDevice</p>
+<h2 id='网络'>网络</h2>
+<p>这个页面需要API24或以上才能进入</p>
+<h3 id='查看wi-fi-mac地址'>查看Wi-Fi Mac地址</h3>
+<p>需要的权限：Device owner或由组织拥有的工作资料的Profile owner</p>
+<p>需要API24或以上</p>
+<p>得到的是设备真实的Wi-Fi Mac地址，不是连接Wi-Fi时随机生成的Mac地址</p>
+<h3 id='优先网络服务'>优先网络服务</h3>
+<p>需要的权限：Device owner</p>
+<p>需要API33或以上</p>
+<p>功能开发中</p>
+<h3 id='wi-fi锁定'>Wi-Fi锁定</h3>
+<p>需要的权限：Device owner或由组织拥有的工作资料的Profile owner</p>
+<p>需要API30或以上</p>
+<p>作用未知</p>
+<h3 id='要求最小wi-fi安全等级'>要求最小Wi-Fi安全等级</h3>
+<p>需要的权限：Device owner或由组织拥有的工作资料的Profile owner</p>
+<p>需要API33或以上</p>
+<p>选项：</p>
+<ul>
+<li>开放</li>
+<li>WEP、WPA(2)-PSK</li>
+<li>WPA-EAP</li>
+<li>WPA3-192bit</li>
+
+</ul>
+<p>用户不能连接低于要求的安全等级的Wi-Fi，如果已经连接了这样的Wi-Fi，会立即断开</p>
+<h3 id='wi-fi-ssid策略'>Wi-Fi SSID策略</h3>
+<p>需要的权限：Device owner或由组织拥有的工作资料的Profile owner</p>
+<p>需要API33或以上</p>
+<p>模式：</p>
+<ul>
+<li>黑名单</li>
+<li>白名单</li>
+
+</ul>
+<p>设置用户能连接/不能连接的Wi-Fi</p>
+<h3 id='私人dns'>私人DNS</h3>
+<p>需要的权限：Device owner</p>
+<p>需要API29或以上</p>
+<p>可以将私人DNS模式设为自动</p>
+<p>也可以设置私人DNS主机名</p>
+<h3 id='网络日志记录'>网络日志记录</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API26或以上</p>
+<p>功能开发中</p>
+<h3 id='wi-fi密钥对'>Wi-Fi密钥对</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API31或以上</p>
+<p>可以添加或移除Wi-Fi密钥对</p>
+<p>作用未知</p>
+<h3 id='apn设置'>APN设置</h3>
+<p>需要的权限：Device owner</p>
+<p>需要API28或以上</p>
+<p>有懂这个的大佬吗？</p>
+<h2 id='工作资料'>工作资料</h2>
+<p>工作资料是一种特殊的用户，使用<code>adb shell pm list user</code>命令可以看到工作资料</p>
+<h3 id='创建工作资料'>创建工作资料</h3>
+<p>设备上不能有Device owner或Profile owner</p>
+<p>只能有一个工作资料</p>
+<p>选项：</p>
+<ul>
+<li>跳过加密（需要API24或以上，没啥用）</li>
+
+</ul>
+<p>创建后会跳转到工作资料中的Android owner，请立即按照指引激活工作资料</p>
+<p>创建后工作资料中的Android owner会成为Profile owner</p>
+<h3 id='由组织拥有的工作资料'>由组织拥有的工作资料</h3>
+<p>需要API30或以上</p>
+<p>成为由组织拥有的工作资料会多很多权限</p>
+<p>前提条件：Android owner是工作资料中的Profile owner</p>
+<p>首先，你需要在工作资料中的Android owner的“用户管理”页面中查看UserID</p>
+<p>然后使用ADB命令成为由组织拥有的工作资料</p>
+<pre><code class='language-shell' lang='shell'>adb shell
+dpm mark-profile-owner-on-organization-owned-device --user USER_ID com.binbin.androidowner/com.binbin.androidowner.MyDeviceAdminReceiver
+</code></pre>
+<p>把命令中的USER_ID替换为你的UserID</p>
+<p>出现“Success”即为成功</p>
+<h3 id='挂起个人应用'>挂起个人应用</h3>
+<p>需要的权限：由组织拥有的工作资料的Profile owner</p>
+<h3 id='资料最长关闭时间'>资料最长关闭时间</h3>
+<p>需要的权限：工作资料的Profile owner</p>
+<p>用户可以关闭工作资料，如果关闭工作资料的时间超过了在这里设置的时间，会停用个人应用</p>
+<p>设置的时间不能小于72小时</p>
+<h3 id='跨资料intent过滤器'>跨资料Intent过滤器</h3>
+<p><a href='https://developer.android.google.cn/reference/kotlin/android/content/Intent'>安卓开发者：Intent</a></p>
+<p>需要的权限：工作资料的Profile owner</p>
+<p>默认情况下，工作资料中的应用不能打开个人应用，个人应用也不可以打开工作资料中的应用</p>
+<p>添加Intent过滤器以允许这些行为</p>
+<h3 id='组织id'>组织ID</h3>
+<p>需要的权限：工作资料的Profile owner</p>
+<p>需要API31或以上</p>
+<p>组织ID长度需在6~64个字符之间</p>
+<p>设置组织ID后才能在“权限”页面查看设备唯一标识码，不同的组织ID会有不同的设备唯一标识码</p>
+<h3 id='删除工作资料'>删除工作资料</h3>
+<p>你可以使用 <a href='#恢复出厂设置'>恢复出厂设置</a> 来删除工作资料</p>
+<p>如果你的工作资料不是由组织拥有的，你可以打开安卓设置-&gt;安全-&gt;更多安全设置-&gt;设备管理器-&gt;带工作资料图标的Android owner-&gt;移除工作资料（非原生用户自己找）</p>
+<h2 id='应用管理'>应用管理</h2>
+<p>如果是工作资料，只能管理工作资料中的应用</p>
+<p>如果是受管理的用户，只能管理那个用户中的应用</p>
+<p>除了安装应用，所有的操作都需要应用的包名，你可以通过ADB命令查看已安装应用的包名</p>
+<pre><code class='language-shell' lang='shell'>adb shell pm list packages
+</code></pre>
+<h3 id='应用详情'>应用详情</h3>
+<p>跳转到应用详情，不需要任何权限</p>
+<h3 id='挂起'>挂起</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API24或以上</p>
+<p>挂起应用，应用图标变为灰色，打开时会提示被IT管理员限制</p>
+<h3 id='隐藏'>隐藏</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>深度隐藏。<code>pm list packages</code>都看不到隐藏的应用。无法卸载隐藏的应用，因为找不到。你一定要记得隐藏的应用的包名，否则你只能去<code>/data/app</code>找被隐藏的应用</p>
+<h3 id='vpn常开'>VPN常开</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API24或以上</p>
+<p>需要应用支持VPN常开</p>
+<h3 id='防卸载'>防卸载</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>用户无法在应用详情卸载应用，也不能使用<code>adb uninstall</code>和<code>pm uninstall</code>命令卸载</p>
+<p>参考：用户限制-&gt;应用-&gt;卸载应用</p>
+<h3 id='禁止用户控制'>禁止用户控制</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API30或以上</p>
+<p>用户无法清除这些应用的存储空间和缓存，但是可以在这里清除</p>
+<h3 id='权限管理'>权限管理</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>使用这个ADB命令查看系统支持的所有权限</p>
+<pre><code class='language-shell' lang='shell'>adb shell pm list permissions
+</code></pre>
+<p>权限有三种状态：</p>
+<ul>
+<li>允许</li>
+<li>拒绝</li>
+<li>由用户决定</li>
+
+</ul>
+<p>设为允许或拒绝后用户无法在应用管理修改权限，用户也不能通过<code>pm grant</code>和<code>pm revoke</code>修改权限</p>
+<p>从允许或拒绝改为由用户决定会保持当前的允许、拒绝状态</p>
+<p>在API31或以上，Profile owner不能再修改传感器相关权限</p>
+<h3 id='跨资料应用'>跨资料应用</h3>
+<p>需要的权限：工作资料的Profile owner</p>
+<p>需要API30或以上</p>
+<p>设置跨工作资料的应用，需要目标应用支持跨资料（比如GBoard）</p>
+<h3 id='跨资料微件'>跨资料微件</h3>
+<p>需要的权限：工作资料的Profile owner</p>
+<p>设置跨工作资料的桌面小部件提供者</p>
+<h3 id='凭据管理策略'>凭据管理策略</h3>
+<p>需要的权限：Device owner</p>
+<p>需要API34或以上</p>
+<p>作用未知</p>
+<h3 id='许可的无障碍应用输入法'>许可的无障碍应用&amp;输入法</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>设置许可的无障碍应用和输入法</p>
+<h3 id='清除应用存储'>清除应用存储</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API28或以上</p>
+<p>清除应用的存储空间</p>
+<h3 id='默认拨号应用'>默认拨号应用</h3>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>需要API34或以上</p>
+<h3 id='卸载应用'>卸载应用</h3>
+<ul>
+<li>静默卸载（需要Device owner，否则没反应）</li>
+<li>请求卸载</li>
+
+</ul>
+<h3 id='安装应用'>安装应用</h3>
+<ul>
+<li>静默安装（需要Device owner，否则没反应）</li>
+<li>请求安装</li>
+
+</ul>
+<h2 id='用户限制'>用户限制</h2>
+<p>需要的权限：Device owner或Profile owner</p>
+<p>Profile owner无法禁用部分功能，工作资料中部分功能无效，wearOS部分功能无效</p>
+<p>功能前面的数字代表最少需要的API等级</p>
+<p>打开开关就是禁用对应的功能，默认情况下所有开关都是关闭的</p>
+<h3 id='网络与互联网'>网络与互联网</h3>
+<ul>
+<li>配置移动数据</li>
+<li>配置Wi-Fi</li>
+<li>(24) 数据漫游</li>
+<li>(34) 使用2G(GSM)</li>
+<li>(34) 超宽频段无线电</li>
+<li>(33) 添加Wi-Fi配置</li>
+<li>(33) 修改Wi-Fi状态</li>
+<li>(33) Wi-Fi直连</li>
+<li>(33) Wi-Fi共享</li>
+<li>(33) 分享设备管理器配置的Wi-Fi</li>
+<li>(23) 重置网络</li>
+<li>配置网络共享</li>
+<li>配置VPN</li>
+<li>(29) 配置私人DNS（仍可以在网络中设置<a href='#私人dns'>私人DNS</a>）</li>
+<li>(28) 飞行模式</li>
+<li>配置小区广播</li>
+<li>短信</li>
+<li>拨出电话</li>
+
+</ul>
+<h3 id='更多连接'>更多连接</h3>
+<ul>
+<li>(26) 蓝牙</li>
+<li>(26) 蓝牙共享</li>
+<li>分享位置</li>
+<li>(28) 配置位置信息</li>
+<li>(22) Beam发送</li>
+<li>USB文件传输</li>
+<li>挂载物理媒体（TF卡、U盘等）</li>
+<li>(28) 打印</li>
+
+</ul>
+<h3 id='应用'>应用</h3>
+<ul>
+<li>安装应用</li>
+<li>(29) 安装未知来源应用（全局）</li>
+<li>安装未知来源应用</li>
+<li>卸载应用</li>
+<li>控制应用</li>
+<li>(34) 修改默认APP</li>
+
+</ul>
+<h3 id='媒体'>媒体</h3>
+<ul>
+<li>(28) 调整亮度</li>
+<li>(28) 修改屏幕超时（仍可以在密码与锁屏中设置<a href='#最大屏幕超时时间'>屏幕超时</a>）</li>
+<li>(28) 息屏显示 (AMOLED)</li>
+<li>调整音量</li>
+<li>取消麦克风静音</li>
+<li>(31) 切换摄像头使用权限</li>
+<li>(31) 切换麦克风使用权限</li>
+
+</ul>
+<h3 id='用户'>用户</h3>
+<ul>
+<li>添加用户（仍可以在用户管理中<a href='#创建并管理用户'>创建用户</a>）</li>
+<li>移除用户（仍可以在用户管理中<a href='#用户操作'>移除用户</a>）</li>
+<li>(28) 切换用户</li>
+<li>(24) 修改用户头像</li>
+<li>跨用户复制（包括工作资料）</li>
+<li>(28) 分享至工作应用</li>
+<li>(28) 个人和工作密码相同</li>
+
+</ul>
+<h3 id='其他'>其他</h3>
+<ul>
+<li>(26) 自动填充服务</li>
+<li>配置凭据</li>
+<li>(29) 内容捕获（作用未知）</li>
+<li>(29) 内容建议（作用未知）</li>
+<li>创建窗口（比如Toast）</li>
+<li>(24) 更换壁纸</li>
+<li>(34) 启用设备管理器（设备管理器就是Device admin）</li>
+<li>(23) 娱乐（仅谷歌商店里的应用）</li>
+<li>修改账号设置</li>
+<li>(28) 修改语言</li>
+<li>(28) 修改日期、时间</li>
+<li>(28) 系统报错对话框</li>
+<li>恢复出厂设置</li>
+<li>(23) 安全模式（开机时通过特定按键组合进入的模式）</li>
+<li>调试功能</li>
+
+</ul>
+<h2 id='用户管理'>用户管理</h2>
+<h3 id='用户信息'>用户信息</h3>
+<p>当前用户的信息</p>
+<p>系统用户：UserID为0的用户（需API23）</p>
+<p>无头系统用户：<del>头被砍掉了</del> 系统用户运行着系统服务，但是没有分配给任何人使用，也不能切换到系统用户（需API31）</p>
+<p>可以登出：用户限制-&gt;<a href='#用户'>用户</a>-&gt;切换用户（需API28）</p>
+<p>临时用户：临时用户登出后会被删除（需API28）</p>
+<p>附属用户：运行Device owner的用户是附属于设备的用户，受管理用户可以设置附属用户ID以成为附属用户（开发中）</p>
+<p>UserID：不是UID。系统用户的UserID为0，其他用户（包括工作资料）的UserID从10开始计算</p>
+<p>序列号：每个用户都不同的序列号</p>
+<h3 id='用户操作'>用户操作</h3>
+<ul>
+<li>登出当前用户（需要是附属用户的Profile owner，需API28，如果是无头系统用户模式，会切换到前台用户）</li>
+<li>在后台启动用户（需Device owner和API28）</li>
+<li>切换至用户（需Device owner）</li>
+<li>停止用户（需Device owner和API28）</li>
+<li>移除用户（需Device owner）</li>
+
+</ul>
+<h3 id='创建并管理用户'>创建并管理用户</h3>
+<p>创建一个受管理用户</p>
+<p>需要Device owner和API24</p>
+<p>选项：</p>
+<ul>
+<li>跳过创建用户向导（切换到新用户之后的向导）</li>
+<li>临时用户（需API28）</li>
+<li>启用所有系统应用（有些系统应用在新用户中是默认不启用的，比如谷歌手机上的YouTube）</li>
+
+</ul>
+<h3 id='用户名'>用户名</h3>
+<p>修改当前用户的用户名</p>
+<p>需要Device owner或Profile owner</p>
+<h3 id='用户会话开始结束消息'>用户会话开始/结束消息</h3>
+<p>用户会话开始消息：切换到非系统用户时的消息</p>
+<p>用户会话结束消息：切换回系统用户时的消息</p>
+<h2 id='密码与锁屏'>密码与锁屏</h2>
+<p><strong>谨慎使用</strong></p>
+<p><strong>警告！</strong>手表不支持带字母的密码，也不支持超过4位的PIN码！如果你设置了这样的密码（或密码复杂度要求），你将无法解锁你的手表！</p>
+<h3 id='密码信息'>密码信息</h3>
+<p>当前密码复杂度：参考要求密码复杂度</p>
+<p>密码达到要求：当前密码复杂度是否达到了要求的密码复杂度</p>
+<p>密码已错误次数：你能看到这个数字的时候，这个数字一定是0</p>
+<p>个人与工作应用密码一致：需要是工作资料的Profile owner</p>
+<h3 id='密码重置令牌'>密码重置令牌</h3>
+<p>需要Device owner或Profile owner</p>
+<p>需API26或以上</p>
+<p>操作：</p>
+<ul>
+<li>清除令牌</li>
+<li>设置令牌（如果无锁屏密码，会自动激活令牌）</li>
+<li>激活令牌（如果有锁屏密码，会跳转到设置中，要求输入锁屏密码）</li>
+
+</ul>
+<p>暂不支持自己输入令牌</p>
+<h3 id='修改密码'>修改密码</h3>
+<p>需要4位或以上密码</p>
+<p>选项：</p>
+<ul>
+<li>开机时不要求输入密码（ <strong>危险！</strong> 一旦设置，只能通过恢复出厂设置来取消）</li>
+<li>不允许其他设备管理员重置密码直至用户输入一次密码</li>
+
+</ul>
+<p>方法：</p>
+<ul>
+<li>使用令牌重置密码（需API26或以上）</li>
+<li>重置密码（弃用）（API24之前，Device admin可使用。API24或以上，Device admin只能在没有密码时设置密码，Device owner和Profile owner仍可以在用户解锁设备后更改密码。API26或以上弃用）</li>
+
+</ul>
+<h3 id='最大密码错误次数'>最大密码错误次数</h3>
+<p>需要Device owner</p>
+<p>输入密码错误次数达到限制后会恢复出厂设置（前提是Android owner有权限恢复出厂设置）</p>
+<h3 id='密码失效超时时间'>密码失效超时时间</h3>
+<p>需要Device owner</p>
+<p>一个密码使用的时间超过这个时间后会要求用户重新设置密码</p>
+<h3 id='密码历史记录长度'>密码历史记录长度</h3>
+<p>需要Device owner</p>
+<p>用户无法输入历史记录内相同的密码</p>
+<p>不知道有啥用</p>
+<h3 id='最大屏幕超时时间'>最大屏幕超时时间</h3>
+<p>需要Device owner</p>
+<p>如果设备无用户交互的时间达到屏幕超时时间就会锁定屏幕，默认是0（由用户决定），在这里设置屏幕超时时间后，用户只能设置比这个短的屏幕超时时间</p>
+<h3 id='密码复杂度要求'>密码复杂度要求</h3>
+<p>需要API31或以上</p>
+<p>需要Device owner或Profile owner</p>
+<p>有4个密码复杂度等级：</p>
+<ol start='' >
+<li>无（允许不设密码）</li>
+<li>低（允许图案和连续性）</li>
+<li>中（无连续性，至少4位）</li>
+<li>高（无连续性，至少6位）</li>
+
+</ol>
+<p>连续性：密码重复（6666）或密码递增递减（4321、2468）</p>
+<p>要求设置新密码：跳转到设置中要求设置新密码，用户也可以选择不设置</p>
+<h3 id='锁屏功能'>锁屏功能</h3>
+<p>需要Device owner（Profile owner或许也可以）</p>
+<p>模式：</p>
+<ul>
+<li>允许全部</li>
+<li>禁用全部</li>
+<li>自定义</li>
+
+</ul>
+<p>自定义的项目：</p>
+<ul>
+<li>禁用小工具（API21或以上弃用，Android owner的最小兼容API版本21，所以这个功能没用）</li>
+<li>禁用相机</li>
+<li>禁用通知（不知道是否包含音乐播放器）</li>
+<li>禁用未经编辑的通知（作用未知）</li>
+<li>禁用可信代理</li>
+<li>禁用指纹解锁</li>
+<li>禁止远程输入（弃用）（需要API24，作用未知）</li>
+<li>禁用人脸解锁（需API28或以上）</li>
+<li>禁用虹膜解锁（需API28或以上）（真的有人用得到吗？）</li>
+<li>禁用生物识别（包括指纹面部虹膜，需API28或以上）</li>
+<li>禁用快捷方式（需API34或以上）</li>
+
+</ul>
+<h3 id='密码质量要求'>密码质量要求</h3>
+<p>需要Device owner或Profile owner</p>
+<p>API31及以上弃用，请使用<a href='#密码复杂度要求'>密码复杂度要求</a></p>
+<p>质量要求：</p>
+<ul>
+<li>无要求（默认）</li>
+<li>需要密码或图案，不管复杂度</li>
+<li>至少一个字母</li>
+<li>至少一个数字</li>
+<li>数字字母各至少一个</li>
+<li>生物识别（弱）</li>
+<li>复杂数字（无连续性）</li>
+<li>自定义（现在不支持，以后也不会支持，因为这已经弃用了）</li>
+
+</ul>
+</body>
+</html>
