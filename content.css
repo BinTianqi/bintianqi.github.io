@@ -1,0 +1,12 @@
+div{
+    margin: 1%;
+    height: auto;
+    display: flexbox;
+    padding-bottom: 3%;
+}
+a,ul{ 
+    line-height: 1.5rem;
+}
+h3{
+    line-height: 1rem;
+}
